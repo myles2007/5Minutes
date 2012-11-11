@@ -1,0 +1,50 @@
+img.message_grav {
+    margin-right: 5px;
+}
+
+hr.hr_divider {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: 0;
+    height: 0;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    display: block;
+}
+
+div.inline, p.inline {
+    display: inline;
+}
+
+.remove_margin_left {
+    margin-left: 0px;
+}
+
+.remove_margin_right {
+    margin-right: 0px;
+}
+
+.remove_margin_top {
+    margin-top: 0px;
+}
+
+.remove_margin_bottom {
+    margin-bottom: 0px;
+}
+
+.smallfont {
+    font-size: 16px;
+}
+
+.tinyfont {
+    font-size: 13px;
+}
+
+.message_header {
+    display: inline-block;
+}
+
+body {
+    background: grey;
+}
+

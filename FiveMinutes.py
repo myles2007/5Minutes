@@ -97,12 +97,12 @@ def gravatar_url(email, size=80):
 @app.route('/addMessage', methods=['POST'])
 def addMessage():
     """ Adds a new message linked to the currently logged in user. """
-    if 'user_id' not in session:
-        abort(401)
+    #if 'user_id' not in session:
+    #    abort(401)
     if request.form['message']:
         db = get_db()
-        user = session['user_id']
-
+        #user = sessionn['user_id']
+        user = 'ME'
         db.execute('''insert into message (author_id, text, pub_date)
           values (?, ?, ?)''', (user, request.form['message'],
                                 datetime.now()))
@@ -114,13 +114,7 @@ def addMessage():
 @app.route('/timeline', methods=['GET'])
 def timeline(**kwargs):
     """ Loads """
-    all_messages = query_db('''SELECT `message`.`text`, `message`.`pub_date`,
-                                      `message`.`sticky`, `message`.`message_id`,
-                                      `user`.`username`, `user`.`email`
-                                FROM `message`
-                                JOIN `user`
-                                    ON `user`.`user_id` = `message`.`author_id`
-                            ''')
+    all_messages = query_db('''SELECT * FROM `message`''')
     return render_template('timeline.html', all_messages=all_messages, **kwargs)
 
 #Database functions
@@ -154,9 +148,6 @@ def query_db(query, args=(), one=False):
     return (rv[0] if rv else None) if one else rv
 
 ###End Database functions
-
-# Add some filters to Jinja
-app.jinja_env.filters['gravatar'] = gravatar_url
 
 if __name__ == '__main__':
     init_db()
