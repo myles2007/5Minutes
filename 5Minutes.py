@@ -19,10 +19,9 @@ def root():
 @app.route('/', methods=['GET', 'POST'])
 def login():
     """Logs the user in."""
-    # if g.user:
-        # return redirect(url_for('timeline'))
     error = None 
     register = None
+    message = None
     if request.method == 'POST':
         user = query_db('''select * from user where
             username = ?''', [request.form['username']], one=True)
@@ -33,10 +32,57 @@ def login():
                                      request.form['password']):
             error = "Did you forget your password?"
         else:
-            flash('You were logged in')
             session['user_id'] = user['user_id']
-            return redirect(url_for('timeline'))
-    return render_template('root.html', error=error, register=register)
+            message = "You were logged in successfully!"
+    return render_template('root.html', error=error, message=message, register=register)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    """Registers the user."""
+    error = None
+    if request.method == 'POST':
+        if not request.form['username']:
+            error = 'You have to enter a username'
+        elif not request.form['email'] or '@' not in request.form['email']:
+            error = 'You have to enter a valid email address'
+        elif not request.form['password']:
+            error = 'You have to enter a password'
+        elif request.form['password'] != request.form['password2']:
+            error = 'The two passwords do not match'
+        elif get_user_id(request.form['username']) is not None:
+            error = 'The username is already taken'
+        else:
+            db = get_db()
+            db.execute('''insert into user (
+              username, email, pw_hash) values (?, ?, ?)''',
+              [request.form['username'], request.form['email'],
+               generate_password_hash(request.form['password'])])
+            db.commit()
+            return redirect(url_for('root'))
+    return render_template('register.html', error=error)
+
+@app.route('/logout')
+def logout():
+    """Logs the user out."""
+    session.pop('user_id', None)
+    return redirect(url_for('root'))
+
+#Convienence Functions
+@app.before_request
+def before_request():
+    g.user = None
+    if 'user_id' in session:
+        g.user = query_db('select * from user where user_id = ?',
+                         [session['user_id']], one=True)
+
+
+def get_user_id(username):
+    """Returns the username"""
+    rv = query_db('select user_id from user where username = ?',
+            [username], one=True)
+    return rv[0] if rv else None
+
+##END
 
 #Database functions
 def get_db():
