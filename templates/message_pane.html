@@ -1,0 +1,21 @@
+{% extends 'root.html' %}
+{% block body %}
+<div class='hero-unit span11 offset1'>
+    <div class=span5>
+        <form action="{{ url_for('addMessage') }}" method="post">
+            <div>
+                <textarea name=message class="span5" style='resize: none' rows="5"></textarea>
+            </div>
+            <div>
+                <button class='btn btn-primary'> Add Message </button>
+            </div>
+        </form>
+    </div>
+    <div class='well span4'>
+        <p> Standup link </p>
+    </div>
+    <div class="well span9">
+        {% block timeline %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

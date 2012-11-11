@@ -1,7 +1,7 @@
 $('#login').click(function() {
                     var login_container = $('#login').parent();
                     var login_button = $('#login').detach();
-                    var login_form = '<form login_form" action="" method=post class="navbar-form">' +
+                    var login_form = '<form id="login_form" action="/login" method=post class="navbar-form">' +
                                         '<input id="username" name="username" type="text" value="Username" class="span2">' +
                                         '<input id="password" name="password" type="password" value="Password" class="span2">' +
                                         '<button type="submit" class="btn btn-primary">Login</button>' +

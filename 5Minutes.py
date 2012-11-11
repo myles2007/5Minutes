@@ -1,6 +1,8 @@
+from datetime import datetime
+from sqlite3 import dbapi2 as sqlite3
+
 from flask import Flask, request, session, g, redirect, url_for,\
                   abort, render_template, flash, _app_ctx_stack
-from sqlite3 import dbapi2 as sqlite3
 from werkzeug import check_password_hash, generate_password_hash
 
 #config
@@ -14,12 +16,13 @@ app.config.from_object(__name__)
 
 @app.route('/')
 def root():
-    return render_template('root.html', login='abc', logout='def')
+    return redirect(url_for('timeline'))
+    #return render_template('timeline.html', login='abc', logout='def')
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     """Logs the user in."""
-    error = None 
+    error = None
     register = None
     message = None
     if request.method == 'POST':
@@ -34,7 +37,8 @@ def login():
         else:
             session['user_id'] = user['user_id']
             message = "You were logged in successfully!"
-    return render_template('root.html', error=error, message=message, register=register)
+
+    return timeline(error=error, message=message, register=register)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -65,7 +69,7 @@ def register():
 def logout():
     """Logs the user out."""
     session.pop('user_id', None)
-    return redirect(url_for('root'))
+    return redirect(url_for('timeline'))
 
 #Convienence Functions
 @app.before_request
@@ -83,6 +87,29 @@ def get_user_id(username):
     return rv[0] if rv else None
 
 ##END
+
+@app.route('/addMessage', methods=['POST'])
+def addMessage():
+    """ Adds a new message linked to the currently logged in user. """
+    #if 'user_id' not in session:
+    #    abort(401)
+    if request.form['message']:
+        db = get_db()
+        #user = sessionn['user_id']
+        user = 'ME'
+        db.execute('''insert into message (author_id, text, pub_date)
+          values (?, ?, ?)''', (user, request.form['message'],
+                                datetime.now()))
+        db.commit()
+        flash('Your message was recorded')
+
+    return redirect(url_for('timeline'))
+
+@app.route('/timeline', methods=['GET'])
+def timeline(**kwargs):
+    """ Loads """
+    all_messages = query_db('''SELECT * FROM `message`''')
+    return render_template('timeline.html', all_messages=all_messages, **kwargs)
 
 #Database functions
 def get_db():

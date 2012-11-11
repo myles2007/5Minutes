@@ -25,7 +25,7 @@
                     <!-- Be sure to leave the brand out there if you want it shown -->
                     <a class="brand" href="#">5Minutes</a>
                     <ul class="nav">
-                        <li class="active"><a href="#">Home</a></li>
+                        <li class="active"><a href="#">Timeline</a></li>
                     </ul>
 
                     <!-- Everything you want hidden at 940px or less, place within here -->
@@ -68,9 +68,11 @@
             <script>
                 window.setTimeout(function() { $(".alert").alert('close'); }, 2000);
             </script>
+        </div>
         {% endif %}
-    </body>
+
     {% block body %}{% endblock %}
+    </body>
     {% include 'global_js_imports.html' %}
     <script src="{{ url_for('static', filename='calendar.js') }}"></script>
 </html>

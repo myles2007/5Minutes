@@ -1,0 +1,6 @@
+{% extends 'message_pane.html' %}
+{% block timeline %}
+    {% for message in all_messages %}
+        <div class='well span5'> {{ message['text'] }} </div>
+    {% endfor %}
+{% endblock %}

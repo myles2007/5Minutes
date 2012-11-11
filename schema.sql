@@ -17,6 +17,6 @@ create table message (
   message_id integer primary key autoincrement,
   author_id integer not null,
   text string not null,
-  pub_date integer,
+  pub_date datetime,
   sticky integer default 0
 );
