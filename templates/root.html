@@ -1,13 +1,58 @@
-<!doctype html>
-<title>5Minutes</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='bootstrap.min.css') }}">
-<link rel=javascript type=text/js href="{{ url_for('static', filename='bootstrap.min.js') }}">
+<!DOCTYPE html>
+<html lang="en-US">
 
-<div class="navbar">
-  <div class="navbar-inner">
-    <a class="brand" href="#">5Minutes</a>
-    <ul class="nav">
-      <li class="active"><a href="#">Home</a></li>
-    </ul>
-  </div>
-</div>
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='bootstrap.min.css') }}">
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+        <title>5Minutes</title>
+    </head>
+    <body>
+        <div class="navbar">
+            <div class="navbar-inner">
+                <div class="container">
+
+                    <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+
+                    <!-- Be sure to leave the brand out there if you want it shown -->
+                    <a class="brand" href="#">5Minutes</a>
+                    <ul class="nav">
+                        <li class="active"><a href="#">Home</a></li>
+                    </ul>
+
+                    <!-- Everything you want hidden at 940px or less, place within here -->
+                    <div class="nav-collapse collapse">
+                        <!-- .nav, .navbar-search, .navbar-form, etc -->
+                        <div class='nav pull-right'>
+                            <a id='login' class="btn btn-primary" data-toggle='dropdown'  href=#>Login</a>
+                            <script>
+                                $('#login').click(function() {
+                                                    var login_container = $('#login').parent();
+                                                    var login_button = $('#login').detach();
+                                                    var login_form = '<form login_form" class="navbar-form">' +
+                                                                        '<input id="username" type="text" value="Username" class="span2">' +
+                                                                        '<input id="password" type="text" value="Password" class="span2">' +
+                                                                        '<button type="submit" class="btn btn-primary">Login</button>' +
+                                                                     '</form>';
+
+                                                    login_container.append(login_form);
+                                                    $('#username').focus(function() { $(this).attr('value', ''); });
+                                                    $('#password').focus(function() { $(this).attr('value', ''); });
+                                                    });
+                            </script>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
+
