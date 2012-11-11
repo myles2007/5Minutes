@@ -35,9 +35,9 @@
                                 $('#login').click(function() {
                                                     var login_container = $('#login').parent();
                                                     var login_button = $('#login').detach();
-                                                    var login_form = '<form login_form" class="navbar-form">' +
-                                                                        '<input id="username" type="text" value="Username" class="span2">' +
-                                                                        '<input id="password" type="text" value="Password" class="span2">' +
+                                                    var login_form = '<form login_form" action="" method=post class="navbar-form">' +
+                                                                        '<input id="username" name="username" type="text" value="Username" class="span2">' +
+                                                                        '<input id="password" name="password" type="password" value="Password" class="span2">' +
                                                                         '<button type="submit" class="btn btn-primary">Login</button>' +
                                                                      '</form>';
 
@@ -52,7 +52,22 @@
                 </div>
             </div>
         </div>
-
+        {% if error %}
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>Error:</strong> {{ error }}
+            {% if register %}
+            <a id='register' class="btn btn-danger" data-toggle='dropdown' href="/login"> Yeah, I should register...</a>
+            <script>
+                window.setTimeout(function() { $(".alert").alert('close'); }, 5000);
+            </script>
+            {% else %}
+            <script>
+                window.setTimeout(function() { $(".alert").alert('close'); }, 2000);
+            </script>
+            {% endif %}
+        </div>
+        {% endif %}
     </body>
 </html>
 
