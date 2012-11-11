@@ -1,0 +1,21 @@
+{% extends "root.html" %}
+{% block title %}Register{% endblock %}
+{% block body %}
+<div class="well span10 offset2">
+<h2>Register</h2>
+  <form action="" method=post>
+      <fieldset>
+        <label> Username </label>
+        <input type="text" name="username" placeholder="Your Name">
+        <label> Email </label>
+        <input type="text" name="email" placeholder="Your Email">
+        <span class="help-block"> Use the email you use with gravitar. </span>
+        <label> Password </label>
+        <input type="password" name="password" placeholder="Password">
+        <label> Type Your Password Again</label>
+        <input type="password" name="password2" placeholder="Password x2">
+      <button type="submit" class="btn"> Submit </button>
+      </fieldset>
+  </form>
+</div>
+{% endblock %}
