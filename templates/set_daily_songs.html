@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class='row'>
+    <div class='hero-unit span11 offset1'>
+    <h2>Set Song</h2>
+    <form action="{{ url_for('setSong') }}" method=post>
+        <fieldset>
+            <label> Spotify URI: </label>
+            <input type="text" name="spotify_uri" placeholder="URIYour Name">
+        <button type="submit" class="btn"> Submit </button>
+        </fieldset>
+    </form>
+</div>
+{% endblock %}

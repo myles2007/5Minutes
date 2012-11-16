@@ -98,6 +98,15 @@ def gravatar_url(email, size=80):
     return 'http://www.gravatar.com/avatar/{mail_hash}?d=identicon&s={size}'.format(
             mail_hash=md5(email.strip().lower().encode('utf-8')).hexdigest(), size=size)
 
+def get_song_of_the_day():
+    today = datetime.now().date()
+    song_of_the_day = query_db('''SELECT `spotify_uri`
+                                  FROM `daily_songs`
+                                  WHERE `song_date` >= ?''', [today.strftime('%Y-%m-%d')],
+                               one=True)
+
+    return song_of_the_day
+
 @app.route('/addMessage', methods=['POST'])
 def addMessage():
     """ Adds a new message linked to the currently logged in user. """
@@ -115,6 +124,22 @@ def addMessage():
 
     return redirect(url_for('timeline'))
 
+@app.route('/setDailySongs', methods=['GET'])
+def setDailySongs():
+    return render_template('set_daily_songs.html')
+
+@app.route('/setSong', methods=['POST'])
+def setSong():
+    if 'user_id' not in session:
+        abort(401)
+    if request.form['spotify_uri']:
+        db = get_db()
+        db.execute('''INSERT INTO `daily_songs` (spotify_uri, song_date)
+                      VALUES (?, ?)''', (request.form['spotify_uri'], datetime.now().date()))
+        db.commit()
+
+    return render_template('set_daily_songs.html', message='Song successfully set!')
+
 @app.route('/timeline', methods=['GET'])
 def timeline(**kwargs):
     """ Loads """
@@ -125,7 +150,9 @@ def timeline(**kwargs):
                                 JOIN `user`
                                     ON `user`.`user_id` = `message`.`author_id`
                             ''')
-    return render_template('timeline.html', all_messages=all_messages, **kwargs)
+    song_of_the_day = get_song_of_the_day()
+    return render_template('timeline.html', all_messages=all_messages,
+                           song_of_the_day=song_of_the_day, **kwargs)
 
 #Database functions
 def get_db():

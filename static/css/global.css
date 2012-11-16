@@ -2,6 +2,15 @@ img.message_grav {
     margin-right: 5px;
 }
 
+div.song_details {
+    width: auto !important;
+}
+
+div.song_details.detail {
+    height: 18px;
+    padding-left: 3px
+}
+
 div.divider {
     margin-top: 5px !important;
     margin-bottom: 5px !important;
