@@ -1,0 +1,27 @@
+{% if error %}
+<div class="alert alert-error">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <strong>Error:</strong> {{ error }}
+    {% if register %}
+    <a id='register' class="btn btn-danger" href="{{ url_for('register') }}">
+        Yeah, I should register...
+    </a>
+    <script>
+        window.setTimeout(function() { $(".alert").alert('close'); }, 5000);
+    </script>
+    {% else %}
+    <script>
+        window.setTimeout(function() { $(".alert").alert('close'); }, 2000);
+    </script>
+    {% endif %}
+</div>
+{% endif %}
+{% if message %}
+<div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <strong>Message:</strong> {{ message }}
+    <script>
+        window.setTimeout(function() { $(".alert").alert('close'); }, 2000);
+    </script>
+</div>
+{% endif %}

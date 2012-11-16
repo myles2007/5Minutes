@@ -20,3 +20,10 @@ create table message (
   pub_date datetime,
   sticky integer default 0
 );
+
+drop table if exists daily_songs;
+create table daily_songs (
+    song_id integer primary key autoincrement,
+    spotify_uri string not null,
+    song_date datetime not null
+);

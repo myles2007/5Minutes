@@ -1,21 +1,29 @@
-{% extends 'root.html' %}
+{% extends 'layout.html' %}
 {% block body %}
-<div class='hero-unit span11 offset1'>
-    <div class=span5>
-        <form action="{{ url_for('addMessage') }}" method="post">
-            <div>
-                <textarea name=message class="span5" style='resize: none' rows="5"></textarea>
+<div class='row'>
+    <div class='hero-unit span11 offset1'>
+        <div class='row-fluid'>
+            <div class='offset1 span6'>
+                <div class='row-fluid'>
+                    <form action="{{ url_for('addMessage') }}" method="post">
+                        <div>
+                            <textarea name=message class='span12' style='resize: none' rows="5">What are you doing today?</textarea>
+                        </div>
+                        <div>
+                            <button class='btn btn-primary'> Add Message </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div>
-                <button class='btn btn-primary'> Add Message </button>
+            <div class='well span4'>
+                {% include 'song_of_the_day.html' %}
             </div>
-        </form>
-    </div>
-    <div class='well span4'>
-        <p> Standup link </p>
-    </div>
-    <div class="well span9">
-        {% block timeline %}{% endblock %}
+        </div>
+        <div class='row-fluid'>
+            <div class="well offset1 span10">
+                {% block timeline %}{% endblock %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='bootstrap.min.css') }}">
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='global.css') }}">
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="{{ url_for('static', filename='jquery_ui-1.8.19.date_picker.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+        <title>{% block title %} 5Minutes Timeline {% endblock %}</title>
+    </head>
+    <body>
+        {% include "navbar.html" %}
+        {% include "notification_bar.html" %}
+        {% block body %}{% endblock %}
+    </body>
+    {% include 'global_js_imports.html' %}
+</html>
+

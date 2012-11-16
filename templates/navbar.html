@@ -1,0 +1,34 @@
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="container">
+
+            <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+
+            <!-- Be sure to leave the brand out there if you want it shown -->
+            <a class="brand" href="#">5Minutes</a>
+            <ul class="nav">
+                <li class="active"><a href="#">Timeline</a></li>
+            </ul>
+
+            <!-- Everything you want hidden at 940px or less, place within here -->
+            <div class="nav-collapse collapse">
+                <!-- .nav, .navbar-search, .navbar-form, etc -->
+                {% if g.user %}
+                    <div class='nav pull-right'>
+                        <a id='logout' class="btn btn-primary" href="{{ url_for('logout') }}">Logout {{ g.user.username }}</a>
+                    </div>
+                {% else %}
+                    <div class='nav pull-right'>
+                        <a id='login' class="btn btn-primary" data-toggle='dropdown'  href=#>Login</a>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>

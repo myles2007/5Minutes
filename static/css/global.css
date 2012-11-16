@@ -2,14 +2,15 @@ img.message_grav {
     margin-right: 5px;
 }
 
-hr.hr_divider {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    border: 0;
-    height: 0;
-    border-top: 1px solid rgba(0,0,0,0.1);
-    border-bottom: 1px solid rgba(255,255,255,0.3);
-    display: block;
+div.divider {
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+    border: 0 !important;
+    height: 0 !important;
+    border-top: 1px solid rgba(0,0,0,0.1) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.3) !important;
+    display: block !important;
+    min-height: 2px !important;
 }
 
 div.inline, p.inline {
