@@ -39,6 +39,10 @@ def login():
             session['user_id'] = user['user_id']
             message = "You were logged in successfully!"
 
+    if 'user_id' in session:
+        g.user = query_db('select * from user where user_id = ?',
+                         [session['user_id']], one=True)
+
     return timeline(error=error, message=message, register=register)
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -70,7 +74,8 @@ def register():
 def logout():
     """Logs the user out."""
     session.pop('user_id', None)
-    return redirect(url_for('timeline'))
+    g.user = None
+    return timeline(message='You have been successfully logged out.')
 
 #Convienence Functions
 @app.before_request
@@ -79,7 +84,6 @@ def before_request():
     if 'user_id' in session:
         g.user = query_db('select * from user where user_id = ?',
                          [session['user_id']], one=True)
-
 
 def get_user_id(username):
     """Returns the username"""
