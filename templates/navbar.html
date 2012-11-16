@@ -12,15 +12,15 @@
             <!-- Be sure to leave the brand out there if you want it shown -->
             <a class="brand" href="#">5Minutes</a>
             <ul class="nav">
-                <li class="active"><a href="{{ url_for('timeline') }}">Timeline</a></li>
+                <li class="{{ Timeline }}"><a href="{{ url_for('timeline') }}">Timeline</a></li>
             </ul>
 
             <!-- Everything you want hidden at 940px or less, place within here -->
             <div class="nav-collapse collapse">
                 <!-- .nav, .navbar-search, .navbar-form, etc -->
                 <div class='nav'>
-                    <li><a href="{{ url_for('setDailySongs') }}">Daily Songs</a></li>
-                    <li><a href="{{ url_for('register') }}">Registration</a></li>
+                    <li class="{{ DailySongs }}"><a href="{{ url_for('setDailySongs') }}">Daily Songs</a></li>
+                    <li class="{{ Registration }}"><a href="{{ url_for('register') }}">Registration</a></li>
                 </div>
                 {% if g.user %}
                     <div class='nav pull-right'>

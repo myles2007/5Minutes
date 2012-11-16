@@ -68,7 +68,7 @@ def register():
                generate_password_hash(request.form['password'])])
             db.commit()
             return redirect(url_for('root'))
-    return render_template('register.html', error=error)
+    return render_template('register.html', error=error, Registration='active')
 
 @app.route('/logout')
 def logout():
@@ -126,7 +126,7 @@ def addMessage():
 
 @app.route('/setDailySongs', methods=['GET'])
 def setDailySongs():
-    return render_template('set_daily_songs.html')
+    return render_template('set_daily_songs.html', DailySongs='active')
 
 @app.route('/setSong', methods=['POST'])
 def setSong():
@@ -152,7 +152,8 @@ def timeline(**kwargs):
                             ''')
     song_of_the_day = get_song_of_the_day()
     return render_template('timeline.html', all_messages=all_messages,
-                           song_of_the_day=song_of_the_day, **kwargs)
+                           song_of_the_day=song_of_the_day, Timeline='active',
+                           **kwargs)
 
 #Database functions
 def get_db():
