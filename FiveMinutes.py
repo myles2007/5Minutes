@@ -1,6 +1,9 @@
+#!/usr/bin/env python2.7
+
+import argparse
 from datetime import datetime
 from hashlib import md5
-from sqlite3 import dbapi2 as sqlite3
+from sqlite3 import dbapi2 as sqlite3, OperationalError
 
 from flask import Flask, request, session, g, redirect, url_for,\
                   abort, render_template, flash, _app_ctx_stack
@@ -68,6 +71,7 @@ def register():
                generate_password_hash(request.form['password'])])
             db.commit()
             return redirect(url_for('root'))
+
     return render_template('register.html', error=error, Registration='active')
 
 @app.route('/logout')
@@ -191,5 +195,22 @@ def query_db(query, args=(), one=False):
 app.jinja_env.filters['gravatar'] = gravatar_url
 
 if __name__ == '__main__':
-    init_db()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--always-init-db', dest='always_init_db', action='store_true', default=False)
+    args = parser.parse_args()
+
+    # If this is set, the db will initialize EVERY time the server is starte/restarted.
+    if args.always_init_db:
+        init_db()
+
+    # Otherwise, it will initialize only if the user table doesn't exist.
+    try:
+        # If the user tried to start without initializing a DB when one
+        # doesn't exist, go ahead and create it.
+        with app.app_context():
+            db = get_db()
+            result = db.execute('''SELECT * FROM `user` LIMIT 1''').fetchall()
+    except OperationalError:
+        init_db()
+
     app.run('0.0.0.0')
