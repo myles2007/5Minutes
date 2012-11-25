@@ -21,10 +21,9 @@ app.config.from_object(__name__)
 @app.route('/')
 def root():
     return redirect(url_for('timeline'))
-    #return render_template('timeline.html', login='abc', logout='def')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/<current>/login', methods=['GET', 'POST'])
+def login(current='timeline'):
     """Logs the user in."""
     error = None
     register = None
@@ -46,13 +45,15 @@ def login():
         g.user = query_db('select * from user where user_id = ?',
                          [session['user_id']], one=True)
 
-    return timeline(error=error, message=message, register=register)
+    return app.view_functions[current](error=error, message=message, register=register, login=True)
 
 @app.route('/register', methods=['GET', 'POST'])
-def register():
+def register(**kwargs):
     """Registers the user."""
     error = None
-    if request.method == 'POST':
+    g.this_page = '/register'
+
+    if request.method == 'POST' and not kwargs.get('login'):
         if not request.form['username']:
             error = 'You have to enter a username'
         elif not request.form['email'] or '@' not in request.form['email']:
@@ -74,12 +75,13 @@ def register():
 
     return render_template('register.html', error=error, Registration='active')
 
-@app.route('/logout')
-def logout():
+@app.route('/<current>/logout')
+def logout(current='timeline'):
     """Logs the user out."""
     session.pop('user_id', None)
     g.user = None
-    return timeline(message='You have been successfully logged out.')
+
+    return app.view_functions[current](message='You have been successfully logged out.')
 
 #Convienence Functions
 @app.before_request
@@ -129,8 +131,9 @@ def addMessage():
     return redirect(url_for('timeline'))
 
 @app.route('/setDailySongs', methods=['GET'])
-def setDailySongs():
-    return render_template('set_daily_songs.html', DailySongs='active')
+def setDailySongs(**kwargs):
+    g.this_page = '/setDailySongs'
+    return render_template('set_daily_songs.html', DailySongs='active', **kwargs)
 
 @app.route('/setSong', methods=['POST'])
 def setSong():
@@ -155,6 +158,7 @@ def timeline(**kwargs):
                                     ON `user`.`user_id` = `message`.`author_id`
                             ''')
     song_of_the_day = get_song_of_the_day()
+    g.this_page = '/timeline'
     return render_template('timeline.html', all_messages=all_messages,
                            song_of_the_day=song_of_the_day, Timeline='active',
                            **kwargs)

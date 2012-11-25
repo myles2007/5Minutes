@@ -24,11 +24,11 @@
                 </div>
                 {% if g.user %}
                     <div class='nav pull-right'>
-                        <a id='logout' class="btn btn-primary" href="{{ url_for('logout') }}">Logout {{ g.user.username }}</a>
+                        <a id='logout' class="btn btn-primary" href="{{ url_for('logout', current=g.this_page) }}">Logout {{ g.user.username }}</a>
                     </div>
                 {% else %}
                     <div class='nav pull-right'>
-                        <a id='login' class="btn btn-primary" data-toggle='dropdown'  href=#>Login</a>
+                        <a id='login' current="{{ g.this_page }}" class="btn btn-primary" data-toggle='dropdown'  href=#>Login</a>
                     </div>
                 {% endif %}
             </div>
