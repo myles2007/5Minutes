@@ -1,12 +1,1 @@
 <script src="{{ url_for('static', filename='login.js') }}"></script>
-<script>
-$('#songInfo').ready(function() {
-                    console.log("I hit this.");
-                    console.log('{{ song_of_the_day.spotify_uri }}');
-                    $.getJSON('http://ws.spotify.com/lookup/1/.json?uri={{ song_of_the_day.spotify_uri }}', function(data){
-                        $('#songTitle').html("Song Title: " + data['track']['name']);
-                        $('#songArtist').html("Song Artist: " + data['track']['artists'][0]['name']);
-                        $('#songAlbum').html("Song Album: " + data['track']['album']['name']);
-                    });
-                });
-</script>
