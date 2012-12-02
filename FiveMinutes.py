@@ -4,19 +4,19 @@ import argparse
 from datetime import datetime
 from hashlib import md5
 from sqlite3 import dbapi2 as sqlite3, OperationalError
+import os
 
 from flask import Flask, request, session, g, redirect, url_for,\
                   abort, render_template, flash, _app_ctx_stack
 from werkzeug import check_password_hash, generate_password_hash
-
-#config
-DATABASE = '/tmp/5minutes.db'
-DEBUG = True
+from werkzeug.wsgi import SharedDataMiddleware
 
 app = Flask(__name__)
 app.config.from_object('config.Development')
 app.config.from_object(__name__)
 
+if app.config['DEBUG']:
+    app.wsgi_app = SharedDataMiddleware(app.wsgi_app, app.config['PATH_MAP'])
 
 @app.route('/')
 def root():
