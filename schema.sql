@@ -24,6 +24,11 @@ create table message (
 drop table if exists daily_songs;
 create table daily_songs (
     song_id integer primary key autoincrement,
-    spotify_uri string not null,
-    song_date datetime not null
+    song_date datetime not null,
+    track_uri string not null,
+    artist_uri string not null,
+    album_uri string not null,
+    track_name string not null,
+    artist_name string not null,
+    album_name string not null
 );

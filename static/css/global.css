@@ -1,25 +1,33 @@
+/* .art_row { */
+    /* margin-bottom: 25px; */
+/* } */
+
 img.message_grav {
     margin-right: 5px;
 }
 
 div.song_details {
-    width: auto !important;
+    width: auto ;
+    height: auto ;
 }
 
-div.song_details.detail {
-    height: 18px;
+
+div.song_details div.song_detail {
+    height: auto;
     padding-left: 3px
+    width: auto ;
+
 }
 
 div.divider {
-    margin-top: 5px !important;
-    margin-bottom: 5px !important;
-    border: 0 !important;
-    height: 0 !important;
-    border-top: 1px solid rgba(0,0,0,0.1) !important;
-    border-bottom: 1px solid rgba(255,255,255,0.3) !important;
-    display: block !important;
-    min-height: 2px !important;
+    margin-top: 5px ;
+    margin-bottom: 5px ;
+    border: 0 ;
+    height: 0 ;
+    border-top: 1px solid rgba(0,0,0,0.1) ;
+    border-bottom: 1px solid rgba(255,255,255,0.3) ;
+    display: block ;
+    min-height: 2px ;
 }
 
 div.inline, p.inline {

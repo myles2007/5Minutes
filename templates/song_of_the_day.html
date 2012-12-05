@@ -3,12 +3,12 @@
     <div class='span12'>
         <div class='row-fluid'>
             <div class='span4'>
-                <iframe src="https://embed.spotify.com/?uri={{ song_of_the_day.spotify_uri }}" width="80" height="80" frameborder="0" allowtransparency="true"></iframe>
+                <iframe src="https://embed.spotify.com/?uri={{ song_of_the_day.track_uri }}" width="80" height="80" frameborder="0" allowtransparency="true"></iframe>
             </div>
-            <div id="songInfo" class='song_details span8'>
-                <div class='song_details detail'><p id="songTitle" class='inline tinyfont'> Song Title: Title Here </p></div>
-                <div class='song_details detail'><p id="songArtist" class='inline tinyfont'> Artist: Artist Here </p></div>
-                <div class='song_details detail'><p id="songAlbum" class='inline tinyfont'> Album: Album Here </p></div>
+            <div id='todays_song_details' class='song_details span8'>
+                <div class='song_detail'><p id="songTitle" class='inline tinyfont'>  Title: {{ song_of_the_day.track_name }} </p></div>
+                <div class='song_detail'><p id="songArtist" class='inline tinyfont'> Artist: {{ song_of_the_day.artist_name }} </p></div>
+                <div class='song_detail'><p id="songAlbum" class='inline tinyfont'> Album: {{ song_of_the_day.album_name }} </p></div>
             </div>
         </div>
         <!-- <div class='row-fluid'> -->
@@ -19,15 +19,3 @@
 {% else %}
     <a href="{{ url_for('setDailySongs') }}">No Song Selected: Set Today's Song</a>
 {% endif %}
-
-<script>
-$('#songInfo').ready(function() {
-                    console.log("I hit this.");
-                    console.log('{{ song_of_the_day.spotify_uri }}');
-                    $.getJSON('http://ws.spotify.com/lookup/1/.json?uri={{ song_of_the_day.spotify_uri }}', function(data){
-                        $('#songTitle').html("Song Title: " + data['track']['name']);
-                        $('#songArtist').html("Song Artist: " + data['track']['artists'][0]['name']);
-                        $('#songAlbum').html("Song Album: " + data['track']['album']['name']);
-                    });
-                });
-</script>

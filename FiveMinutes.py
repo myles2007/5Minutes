@@ -5,7 +5,10 @@ from datetime import datetime
 from hashlib import md5
 from sqlite3 import dbapi2 as sqlite3, OperationalError
 import os
+import urllib2
 
+from bs4 import BeautifulSoup
+import dateutil.parser
 from flask import Flask, request, session, g, redirect, url_for,\
                   abort, render_template, flash, _app_ctx_stack
 from werkzeug import check_password_hash, generate_password_hash
@@ -106,7 +109,7 @@ def gravatar_url(email, size=80):
 
 def get_song_of_the_day():
     today = datetime.now().date()
-    song_of_the_day = query_db('''SELECT `spotify_uri`
+    song_of_the_day = query_db('''SELECT *
                                   FROM `daily_songs`
                                   WHERE `song_date` >= ?''', [today.strftime('%Y-%m-%d')],
                                one=True)
@@ -131,21 +134,86 @@ def addMessage():
     return redirect(url_for('timeline'))
 
 @app.route('/setDailySongs', methods=['GET'])
+@app.route('/setDailySongs/<message>', methods=['GET'])
 def setDailySongs(**kwargs):
     g.this_page = '/setDailySongs'
-    return render_template('set_daily_songs.html', DailySongs='active', **kwargs)
+    songs = query_db('''SELECT * FROM `daily_songs`
+                        ORDER BY `song_date` DESC''')
+    song_of_the_day = get_song_of_the_day()
+    return render_template('set_daily_songs.html', DailySongs='active', songs=songs,
+                           song_of_the_day=song_of_the_day, **kwargs)
+
+def extract_id_from_uri(uri):
+    '''
+    '''
+    return uri[uri.rfind(':') + 1:]
 
 @app.route('/setSong', methods=['POST'])
 def setSong():
     if 'user_id' not in session:
         abort(401)
-    if request.form['spotify_uri']:
+    if request.form['spotify_uri'] and request.form['song_date']:
+        song_details = get_song_details(request.form['spotify_uri'])
         db = get_db()
-        db.execute('''INSERT INTO `daily_songs` (spotify_uri, song_date)
-                      VALUES (?, ?)''', (request.form['spotify_uri'], datetime.now().date()))
+        db.execute('''INSERT INTO `daily_songs` (song_date, track_uri, artist_uri,
+                                                 album_uri, track_name, artist_name, album_name)
+                      VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                      (dateutil.parser.parse(request.form['song_date']).date(),
+                       song_details['track_uri'], song_details['artist_uri'], song_details['album_uri'],
+                       song_details['track_name'], song_details['artist_name'], song_details['album_name']))
         db.commit()
 
-    return render_template('set_daily_songs.html', message='Song successfully set!')
+    return redirect(url_for('setDailySongs', message='Song set successfully!'))
+
+def get_song_details(track_uri):
+    '''
+    '''
+    spotify_lookup_base = 'http://ws.spotify.com/lookup/1/?uri='
+    song_details = {}
+    track_info = urllib2.urlopen(''.join([spotify_lookup_base, track_uri])).read()
+    detail_soup = BeautifulSoup(track_info)
+
+    song_details['track_uri'] = track_uri
+    song_details['track_name'] = detail_soup.find('track').find('name').get_text()
+
+    artist = detail_soup.find('artist')
+    song_details['artist_uri'] = artist.get('href')
+    song_details['artist_name'] = artist.find('name').get_text()
+
+    album = detail_soup.find('album')
+    song_details['album_uri'] = album.get('href')
+    song_details['album_name'] = album.find('name').get_text()
+
+    album_seen_before = query_db('''SELECT `song_id`
+                                    FROM `daily_songs`
+                                    WHERE `album_uri` = ?''', (song_details['album_uri'], ))
+    if not album_seen_before:
+        retrieve_album_art(song_details['album_uri'])
+
+    return song_details
+
+
+def retrieve_album_art(album_uri):
+    '''
+    '''
+    img_dir = app.config['PATH_MAP']['/img']
+    art_dir = os.path.join(img_dir, 'albumart')
+
+    base_url = 'http://open.spotify.com/album/'
+    album_uri = album_uri[album_uri.rfind(':') + 1:]
+
+    full_url = ''.join([base_url, album_uri])
+    track_html = urllib2.urlopen(full_url).read()
+    track_soup = BeautifulSoup(track_html)
+    cover = track_soup.find(id='big-cover')
+    cover_url = cover.get('src')
+    cover_art = urllib2.urlopen(cover_url)
+
+    file_path = os.path.join(art_dir, album_uri)
+    with open(file_path, 'w+') as art_file:
+        art_file.write(cover_art.read())
+
+    return file_path
 
 @app.route('/timeline', methods=['GET'])
 def timeline(**kwargs):
@@ -197,6 +265,7 @@ def query_db(query, args=(), one=False):
 
 # Add some filters to Jinja
 app.jinja_env.filters['gravatar'] = gravatar_url
+app.jinja_env.filters['extract_id_from_uri'] = extract_id_from_uri
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
