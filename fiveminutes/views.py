@@ -10,7 +10,7 @@ import dateutil.parser
 from flask import render_template, request, flash, redirect,\
                   url_for, g, abort, session
 from fiveminutes import app, oid
-from fiveminutes.models import User
+from fiveminutes.models import User, DailySong
 from fiveminutes.mixin import safe_commit
 
 def login_required(fnctn):
@@ -142,11 +142,7 @@ def gravatar_url(email, size=80):
 
 def get_song_of_the_day():
     today = datetime.now().date()
-    song_of_the_day = query_db('''SELECT *
-                                  FROM `daily_songs`
-                                  WHERE `song_date` >= ?''', [today.strftime('%Y-%m-%d')],
-                               one=True)
-
+    song_of_the_day = DailySong.filter(created_on=today).first()
     return song_of_the_day
 
 @app.route('/addMessage', methods=['POST'])
