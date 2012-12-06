@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+{% block head %}
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='calendar.css') }}">
+    <script src="/js/set_daily_songs.js"></script>
+{% endblock %}
+
+{% block body %}
+{% if songs %}
+
+    <div class='row'>
+        <div class='hero-unit span11 offset1'>
+            <div class='row-fluid'>
+                <div class='well span12'>
+                    <div class='row-fluid'>
+                        <div class='span8'>
+                            <div id='form_container' class='row-fluid'>
+                                <form class='span8 form-horizontal' action="{{ url_for('setSong') }}" method=post>
+                                    <fieldset>
+                                    <div class='control-group'>
+                                        <label class='control-label'> Spotify URI: </label>
+                                        <div class='controls'>
+                                            <input type="text" name="spotify_uri" placeholder="URI">
+                                        </div>
+                                    </div>
+                                    <div class='control-group'>
+                                        <label class='control-label'> Song Date: </label>
+                                        <div class='controls'>
+                                            <div class='btn-group'>
+                                                <input type='hidden' id='song_date' name='song_date' />
+                                                <button type='button' id='date_selection' class="btn btn-primary">Date</button>
+                                                <button type='button' class="btn" id='calendar_toggle'>
+                                                    <span class='caret'></span>
+                                                </button>
+                                            </div>
+                                            <button id='add_song_submit' type="submit" class="btn"> Submit </button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                        <div class='well span4'>
+                            {% include 'song_of_the_day.html' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% for song in songs %}
+                {% if loop.index0 % 3 == 0 %}
+                    {% if not loop.first %}
+                        </div>
+                    {% endif %}
+                    <div class='row-fluid art_row'>
+                {% endif %}
+                <div class='span4 song well' id="{{ song.track_uri }}-{{ song.album_uri }}">
+                    <div class='row-fluid'>
+                        <img class='row-fluid' src='/img/albumart/{{ song.album_uri|extract_id_from_uri }}' />
+                        <div class='song_details row-fluid '>
+                            <div class='row-fluid'>
+                                <div class='span12 song_detail'><p id="songDate" class='inline tinyfont'> Date: {{ song.song_date }} </p></div>
+                            </div>
+                            <div class='divider'></div>
+                            <div class='row-fluid'>
+                                <div class='span12 song_detail'><p id="songTitle" class='inline tinyfont'> Title: {{ song.track_name }} </p></div>
+                            </div>
+                            <div class='divider'></div>
+                            <div class='row-fluid'>
+                                <div class='span12 song_detail'><p id="songArtist" class='inline tinyfont'> Artist: {{ song.artist_name }} </p></div>
+                            </div>
+                            <div class='divider'></div>
+                            <div class='row-fluid'>
+                                <div class='span12 song_detail'><p id="songAlbum" class='inline tinyfont'> Album: {{ song.album_name }} </p></div>
+                            </div>
+                            <div class='divider'></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class='row'>
+        <div class='hero-unit span11 offset1'>
+        <h2>Set Song</h2>
+        <form action="{{ url_for('setSong') }}" method=post>
+            <fieldset>
+                <label> Spotify URI: </label>
+                <input type="text" name="spotify_uri" placeholder="URIYour Name">
+            <button type="submit" class="btn"> Submit </button>
+            </fieldset>
+        </form>
+    </div>
+{% endif %}
+<script src="/js/calendar.js"></script>
+{% endblock %}
+
+
