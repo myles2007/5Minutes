@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+    <form action="" method=post>
+        <h2>You must be logged into your Britecore.com email account in order to access this website. If you are, click the giant button below.</h2>
+        <input type=hidden name=openid size=30 value={{ id_url }}>
+        <button type=submit class="btn-large btn btn-success" style="line-height: normal;">
+        <div style="font-size: 48px;"><i class="icon-hand-right" style="line-height: normal;"></i>&nbsp;&nbsp;Sign in</div>
+        </button>
+        <input type=hidden name=next value="{{ next }}">
+    </form>
+{% endblock %}

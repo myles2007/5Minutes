@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}Create Profile{% endblock %}
+{% block content %}
+  <form action="" method=post class="form-horizontal">
+    <div class="control-group">
+        <div class="controls">
+            <label for="name">Name</label>
+            <input name="name" required pattern="[a-zA-Z0-9- ]+" type="text" title="Your Name" placeholder="Your Name" value="{{ request.values.name }}" />
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <label for="email">Email</label>
+            <input name="email" required type="text" title="Your Email" placeholder="Your Email" value="{{ request.values.email }}" />
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <input type=submit value="Create Profile" class="btn-large btn btn-success">
+            <input type=submit name=delete value="Delete" class="btn-large btn btn-danger">
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            (If you don't want to proceed, you can <a href="{{ url_for('logout') }}">sign out</a> again.)
+        </div>
+    </div>
+  </form>
+{% endblock %}

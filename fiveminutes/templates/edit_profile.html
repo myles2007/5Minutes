@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+  <form action="" method=post class="form-horizontal">
+    <div class="control-group">
+        <div class="controls">
+            <label for="name">Name</label>
+            <input name="name" required pattern="[a-zA-Z0-9- ]+" type="text" title="Your Name" placeholder="Your Name" value="{{ form.name }}" />
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <label for="email">Email</label>
+            <input name="email" required type="text" title="Your Email" placeholder="Your Email" value="{{ form.email }}" />
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <input type=submit value="Update Profile" class="btn-large btn btn-success">
+            <input type=submit name=delete value="Delete" class="btn-large btn btn-danger">
+        </div>
+    </div>
+  </form>
+{% endblock %}
