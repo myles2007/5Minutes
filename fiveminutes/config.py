@@ -1,0 +1,9 @@
+CONFIG = {}
+CONFIG['DEBUG'] = True
+CONFIG['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fiveminutes.db'
+CONFIG['MAIL_SERVER'] = 'smtp.sendgrid.net'
+CONFIG['MAIL_PORT'] = 587
+CONFIG['MAIL_USE_TLS'] = True
+CONFIG['MAIL_USERNAME'] = 'username'
+CONFIG['MAIL_PASSWORD'] = 'password'
+SECRET_KEY = 'SECRET_KEY_FOR_APP'
