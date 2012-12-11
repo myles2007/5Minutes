@@ -1,0 +1,12 @@
+Flask>=0.9
+Flask-Mail>=0.7.4
+Flask-OpenID==1.1.0
+Flask-SQLAlchemy>=0.16
+Jinja2>=2.6
+SQLAlchemy>=0.7.9
+Werkzeug>=0.8.3
+boto>=2.6.0
+simplejson>=2.3.2
+python-dateutil>=2.1
+sh>=1.07
+beautifulsoup4==4.1.0
