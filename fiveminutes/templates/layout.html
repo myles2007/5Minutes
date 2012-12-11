@@ -2,14 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Marshmallow Cloud {% block title %}{% endblock title %}</title>
+    <title>Five Minutes {% block title %}{% endblock title %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="EC2 Instance Launcher for BriteCore.">
     <meta name="author" content="Team Blayden">
 
     <!-- Le styles -->
     <link href="{{ url_for('static',filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/smore.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/5.png') }}">
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -41,7 +41,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </a>
-            <a class="brand" href="{{ url_for('index') }}" style="color: #fff;"><i class="icon-cloud"></i> Marshmallow Cloud</a>
+            <a class="brand" href="{{ url_for('index') }}" style="color: #fff;"><i class="icon-cog"></i> Five Minutes</a>
             <div class="nav-collapse collapse">
                 <ul class="nav pull-right" style="margin-top: -10px;">
                     {% if g.user %}
@@ -56,7 +56,7 @@
       </div>
     </div>
     <!-- ends navbar -->
-    <div class="container">
+    <div class="container hero-unit">
         {% with messages = get_flashed_messages(with_categories=true) %}
             <div id='alerts'>
             {% for category, message in messages %}
