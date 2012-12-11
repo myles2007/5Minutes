@@ -1,23 +1,23 @@
-{% extends 'message_pane.html' %}
+{% extends "announcement_pane.html" %}
 {% block timeline %}
-{% for message in all_messages %}
+{% for announcement in all_announcements %}
     <div class='row-fluid'>
         <div class='well offset1 span10'>
             <div class='row-fluid'>
                 <div class='span12 message_header'>
                     <div class='pull-left'>
-                        <img class='message_grav' src="{{ message.email|gravatar(size=30) }}">
-                        <p class='inline smallfont'> {{ message.username }} </p>
+                        <img class='message_grav' src="{{ announcement.user.email|gravatar(size=30) }}">
+                        <p class='inline smallfont'> {{ announcement.user.name }} </p>
                     </div>
                     <div class='pull-right'>
-                        <p class='inline tinyfont'> <small> {{ message.pub_date }} </small> </p>
+                        <p class='inline tinyfont'> <small> {{ announcement.created_on|datetimeformat }} </small> </p>
                     </div>
                 </div>
             </div>
             <div class='row-fluid'><div class='span12 divider'></div></div>
             <div class='row-fluid'>
                 <div class='span12'>
-                    <p> <small> {{ message['text'] }} </small></p>
+                    <p> <small> {{ announcement.text }} </small></p>
                 </div>
             </div>
         </div>

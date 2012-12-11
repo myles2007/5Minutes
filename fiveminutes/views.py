@@ -11,7 +11,7 @@ from flask import render_template, request, flash, redirect,\
                   url_for, g, abort, session
 from fiveminutes import app, oid
 from fiveminutes.models import Announcement, User, DailySong
-from fiveminutes.mixin import safe_commit
+from fiveminutes.mixin import func, safe_commit
 
 # Utility functions for our Flask App
 
@@ -85,11 +85,12 @@ def create_or_login(resp):
                             email=resp.email))
 
 @app.route('/create-profile', methods=['GET', 'POST'])
-@login_required
 def create_profile():
     """If this is the user's first login, the create_or_login function
     will redirect here so that the user can set up his profile.
     """
+    if g.user is not None or 'openid' not in session:
+        return redirect(url_for('index'))
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
@@ -150,7 +151,7 @@ def get_song_of_the_day(today=None):
     if not today:
         today = datetime.now().date()
 
-    song_of_the_day = DailySong.filter(created_on=today).first()
+    song_of_the_day = DailySong.filter(func.date(DailySong.created_on) == today).all()
     return song_of_the_day
 
 @app.route('/announcements/add', methods=['POST'])
@@ -159,19 +160,19 @@ def add_announcement():
     """ Adds a new announcment linked to the currently logged in user. """
     if request.form['announcement']:
         new_a = Announcement(user_id=g.user.id, text=request.form['announcement'])
+        new_a.insert()
         safe_commit()
         flash('Your announcement was stored', 'success')
 
-    return redirect(url_for('announcments'))
+    return redirect(url_for('announcements'))
 
-@app.route('/setDailySongs', methods=['GET'])
-@app.route('/setDailySongs/<message>', methods=['GET'])
+@app.route('/daily-songs', methods=['GET'])
+@app.route('/daily-songs/<message>', methods=['GET'])
 @login_required
-def setDailySongs(**kwargs):
-    songs = query_db('''SELECT * FROM `daily_songs`
-                        ORDER BY `song_date` DESC''')
+def get_daily_songs(**kwargs):
+    songs = DailySong.order_by(DailySong.created_on.desc()).all()
     song_of_the_day = get_song_of_the_day()
-    return render_template('set_daily_songs.html', DailySongs='active', songs=songs,
+    return render_template('daily_songs.html', songs=songs,
                            song_of_the_day=song_of_the_day, **kwargs)
 
 def extract_id_from_uri(uri):
@@ -179,22 +180,17 @@ def extract_id_from_uri(uri):
     '''
     return uri[uri.rfind(':') + 1:]
 
-@app.route('/setSong', methods=['POST'])
-def setSong():
-    if 'user_id' not in session:
-        abort(401)
+@app.route('/daily-songs/add', methods=['POST'])
+@login_required
+def set_song():
     if request.form['spotify_uri'] and request.form['song_date']:
         song_details = get_song_details(request.form['spotify_uri'])
-        db = get_db()
-        db.execute('''INSERT INTO `daily_songs` (song_date, track_uri, artist_uri,
-                                                 album_uri, track_name, artist_name, album_name)
-                      VALUES (?, ?, ?, ?, ?, ?, ?)''',
-                      (dateutil.parser.parse(request.form['song_date']).date(),
-                       song_details['track_uri'], song_details['artist_uri'], song_details['album_uri'],
-                       song_details['track_name'], song_details['artist_name'], song_details['album_name']))
-        db.commit()
+        new_song = DailySong(created_on=dateutil.parser.parse(request.form['song_date']).date(),
+                             **song_details)
+        new_song.insert()
+        safe_commit()
 
-    return redirect(url_for('setDailySongs', message='Song set successfully!'))
+    return redirect(url_for('get_daily_songs', message='Song set successfully!'))
 
 def get_song_details(track_uri):
     '''
@@ -247,10 +243,23 @@ def retrieve_album_art(album_uri):
     return file_path
 
 @app.route('/announcements', methods=['GET'])
-def announcements(**kwargs):
+def announcements():
     """ Loads all Announcements for today including the song of the day."""
-    today = datetime.today()
-    all_announcements = Announcement.filter(created_on=today).all()
+    today = datetime.now().date()
+    all_announcements = Announcement.filter(func.date(Announcement.created_on) == today).all()
     song_of_the_day = get_song_of_the_day(today)
-    return render_template('announcements.html', all_announcements=all_announcements,
-                           song_of_the_day=song_of_the_day, **kwargs)
+    return render_template('timeline.html', all_announcements=all_announcements,
+                           song_of_the_day=song_of_the_day)
+
+@app.route('/queues', methods=['GET'])
+@app.route('/queues/<string:user_id>', methods=['GET'])
+def get_queues(user_id=None):
+    pass
+
+def datetimeformat(value, format='%m/%d/%Y %I:%M %p'):
+    return value.strftime(format)
+
+# Add some filters to Jinja
+app.jinja_env.filters['gravatar'] = gravatar_url
+app.jinja_env.filters['extract_id_from_uri'] = extract_id_from_uri
+app.jinja_env.filters['datetimeformat'] = datetimeformat
