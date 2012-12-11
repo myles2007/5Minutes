@@ -10,8 +10,10 @@ import dateutil.parser
 from flask import render_template, request, flash, redirect,\
                   url_for, g, abort, session
 from fiveminutes import app, oid
-from fiveminutes.models import User, DailySong
+from fiveminutes.models import Announcement, User, DailySong
 from fiveminutes.mixin import safe_commit
+
+# Utility functions for our Flask App
 
 def login_required(fnctn):
     @wraps(fnctn)
@@ -27,11 +29,13 @@ def before_request():
     if 'openid' in session:
         g.user = User.query.filter_by(openid=session['openid']).first()
 
+# End Utility Functions
+
 @app.route('/')
 def index():
     if not g.user:
         return redirect(url_for('login'))
-    return redirect(url_for('timeline'))
+    return redirect(url_for('announcements'))
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
@@ -81,33 +85,32 @@ def create_or_login(resp):
                             email=resp.email))
 
 @app.route('/create-profile', methods=['GET', 'POST'])
+@login_required
 def create_profile():
     """If this is the user's first login, the create_or_login function
     will redirect here so that the user can set up his profile.
     """
-    if g.user is not None or 'openid' not in session:
-        return redirect(url_for('index'))
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
+        group = request.form['group']
         if not name:
             flash(u'Error: you have to provide a name', 'error')
         elif '@' not in email:
             flash(u'Error: you have to enter a valid email address', 'error')
         else:
             flash(u'Profile successfully created', 'success')
-            user = User(name, email, session['openid'])
+            user = User(name=name, email=email, openid=session['openid'], group=group)
             user.insert()
             safe_commit()
             return redirect(oid.get_next_url())
     return render_template('create_profile.html', next_url=oid.get_next_url())
 
 @app.route('/profile', methods=['GET', 'POST'])
+@login_required
 def edit_profile():
     """Updates a profile"""
-    if g.user is None:
-        abort(401)
-    form = dict(name=g.user.name, email=g.user.email)
+    form = dict(name=g.user.name, email=g.user.email, group=g.user.group)
     if request.method == 'POST':
         if 'delete' in request.form:
             g.user.delete()
@@ -117,19 +120,22 @@ def edit_profile():
             return redirect(url_for('index'))
         form['name'] = request.form['name']
         form['email'] = request.form['email']
+        form['group'] = request.form['group']
         if not form['name']:
             flash(u'Error: you have to provide a name', 'error')
         elif '@' not in form['email']:
             flash(u'Error: you have to enter a valid email address', 'error')
         else:
-            flash(u'Profile successfully created', 'success')
+            flash(u'Profile successfully updated', 'success')
             g.user.name = form['name']
             g.user.email = form['email']
+            g.user.group = form['group']
             safe_commit()
             return redirect(url_for('edit_profile'))
     return render_template('edit_profile.html', form=form)
 
 @app.route('/logout')
+@login_required
 def logout():
     session.pop('openid', None)
     flash(u'You have been signed out', 'success')
@@ -140,32 +146,28 @@ def gravatar_url(email, size=80):
     return 'http://www.gravatar.com/avatar/{mail_hash}?d=identicon&s={size}'.format(
             mail_hash=md5(email.strip().lower().encode('utf-8')).hexdigest(), size=size)
 
-def get_song_of_the_day():
-    today = datetime.now().date()
+def get_song_of_the_day(today=None):
+    if not today:
+        today = datetime.now().date()
+
     song_of_the_day = DailySong.filter(created_on=today).first()
     return song_of_the_day
 
-@app.route('/addMessage', methods=['POST'])
-def addMessage():
-    """ Adds a new message linked to the currently logged in user. """
-    if 'user_id' not in session:
-        abort(401)
-    if request.form['message']:
-        db = get_db()
-        user = session['user_id']
+@app.route('/announcements/add', methods=['POST'])
+@login_required
+def add_announcement():
+    """ Adds a new announcment linked to the currently logged in user. """
+    if request.form['announcement']:
+        new_a = Announcement(user_id=g.user.id, text=request.form['announcement'])
+        safe_commit()
+        flash('Your announcement was stored', 'success')
 
-        db.execute('''insert into message (author_id, text, pub_date)
-          values (?, ?, ?)''', (user, request.form['message'],
-                                datetime.now()))
-        db.commit()
-        flash('Your message was recorded')
-
-    return redirect(url_for('timeline'))
+    return redirect(url_for('announcments'))
 
 @app.route('/setDailySongs', methods=['GET'])
 @app.route('/setDailySongs/<message>', methods=['GET'])
+@login_required
 def setDailySongs(**kwargs):
-    g.this_page = '/setDailySongs'
     songs = query_db('''SELECT * FROM `daily_songs`
                         ORDER BY `song_date` DESC''')
     song_of_the_day = get_song_of_the_day()
@@ -244,18 +246,11 @@ def retrieve_album_art(album_uri):
 
     return file_path
 
-@app.route('/timeline', methods=['GET'])
-def timeline(**kwargs):
-    """ Loads """
-    all_messages = query_db('''SELECT `message`.`text`, `message`.`pub_date`,
-                                      `message`.`sticky`, `message`.`message_id`,
-                                      `user`.`username`, `user`.`email`
-                                FROM `message`
-                                JOIN `user`
-                                    ON `user`.`user_id` = `message`.`author_id`
-                            ''')
-    song_of_the_day = get_song_of_the_day()
-    g.this_page = '/timeline'
-    return render_template('timeline.html', all_messages=all_messages,
-                           song_of_the_day=song_of_the_day, Timeline='active',
-                           **kwargs)
+@app.route('/announcements', methods=['GET'])
+def announcements(**kwargs):
+    """ Loads all Announcements for today including the song of the day."""
+    today = datetime.today()
+    all_announcements = Announcement.filter(created_on=today).all()
+    song_of_the_day = get_song_of_the_day(today)
+    return render_template('announcements.html', all_announcements=all_announcements,
+                           song_of_the_day=song_of_the_day, **kwargs)
