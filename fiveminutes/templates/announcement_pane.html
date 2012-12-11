@@ -1,26 +1,27 @@
-{% extends 'layout.html' %}
-{% block body %}
+{% extends "layout.html" %}
+{% block title %}Announcements{% endblock %}
+{% block content %}
 <div class='row'>
-    <div class='hero-unit span11 offset1'>
+    <div class='hero-unit'>
         <div class='row-fluid'>
-            <div class='offset1 span6'>
+            <div class='offset1'>
                 <div class='row-fluid'>
-                    <form action="{{ url_for('addMessage') }}" method="post">
+                    <form action="{{ url_for('add_announcement') }}" method="post">
                         <div>
-                            <textarea name=message class='span12' style='resize: none' rows="5">What are you doing today?</textarea>
+                            <textarea name="announcement" rows="5" placeholder="What are you doing today?"></textarea>
                         </div>
                         <div>
-                            <button class='btn btn-primary'> Add Message </button>
+                            <button class='btn btn-primary'> Add Announcement </button>
                         </div>
                     </form>
                 </div>
             </div>
-            <div class='well span4'>
+            <div class='well'>
                 {% include 'song_of_the_day.html' %}
             </div>
         </div>
         <div class='row-fluid'>
-            <div class="well offset1 span10">
+            <div class="well">
                 {% block timeline %}{% endblock %}
             </div>
         </div>
