@@ -17,7 +17,16 @@
     <div class="control-group">
         <div class="controls">
             <label for="group">Group</label>
-            <input name="group" required type="text" title="Your Work Group" placeholder="Your Work Group (ex. Engineers)" value="{{ form.group }}" />
+            <select name="group" required>
+                <option></option>
+                {% for work_group in work_groups %}
+                    {% if work_group == form.group %}
+                        <option selected="selected">{{ work_group }}</option>
+                    {% else %}
+                        <option>{{ work_group }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
         </div>
     </div>
     <div class="control-group">

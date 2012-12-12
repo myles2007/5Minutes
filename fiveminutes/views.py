@@ -62,6 +62,7 @@ def login():
         flash(err, 'error')
 
     return render_template('login.html', next=oid.get_next_url(),
+                           openid_domain=app.config['OPENID_DOMAIN'],
                            id_url='https://www.google.com/accounts/o8/id')
 
 @oid.after_login
@@ -73,8 +74,8 @@ def create_or_login(resp):
     """
     session['openid'] = resp.identity_url
     user = User.query.filter_by(openid=resp.identity_url).first()
-    if not resp.email.endswith('@britecore.com'):
-        flash('You must be logged in to your britecore.com email to continue.', 'error')
+    if not resp.email.endswith('@{}'.format(app.config['OPENID_DOMAIN'])):
+        flash('You must be logged in to your {} Google account to continue.'.format(app.config['OPENID_DOMAIN']), 'error')
         return redirect(url_for('index'))
     if user is not None:
         flash(u'Successfully signed in', 'success')
@@ -105,7 +106,7 @@ def create_profile():
             user.insert()
             safe_commit()
             return redirect(oid.get_next_url())
-    return render_template('create_profile.html', next_url=oid.get_next_url())
+    return render_template('create_profile.html', next_url=oid.get_next_url(), work_groups=app.config['WORK_GROUPS'])
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -133,7 +134,7 @@ def edit_profile():
             g.user.group = form['group']
             safe_commit()
             return redirect(url_for('edit_profile'))
-    return render_template('edit_profile.html', form=form)
+    return render_template('edit_profile.html', form=form, work_groups=app.config['WORK_GROUPS'])
 
 @app.route('/logout')
 @login_required

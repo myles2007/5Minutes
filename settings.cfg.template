@@ -5,3 +5,5 @@ MAIL_USE_TLS = True
 MAIL_USERNAME = 'FILLMEIN'
 MAIL_PASSWORD = 'FILLMEIN'
 SECRET_KEY = 'FILLMEIN'
+OPENID_DOMAIN = 'britecore.com'
+WORK_GROUPS = ('Engineering', 'Client Services', 'Admin')
