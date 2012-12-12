@@ -168,13 +168,12 @@ def add_announcement():
     return redirect(url_for('announcements'))
 
 @app.route('/daily-songs', methods=['GET'])
-@app.route('/daily-songs/<message>', methods=['GET'])
 @login_required
-def get_daily_songs(**kwargs):
+def get_daily_songs():
     songs = DailySong.order_by(DailySong.created_on.desc()).all()
     song_of_the_day = get_song_of_the_day()
     return render_template('daily_songs.html', songs=songs,
-                           song_of_the_day=song_of_the_day, **kwargs)
+                           song_of_the_day=song_of_the_day)
 
 def extract_id_from_uri(uri):
     '''
@@ -191,7 +190,8 @@ def set_song():
         new_song.insert()
         safe_commit()
 
-    return redirect(url_for('get_daily_songs', message='Song set successfully!'))
+    flash('Song set successfully!', 'success')
+    return redirect(url_for('get_daily_songs'))
 
 def get_song_details(track_uri):
     '''
@@ -212,9 +212,8 @@ def get_song_details(track_uri):
     song_details['album_uri'] = album.get('href')
     song_details['album_name'] = album.find('name').get_text()
 
-    album_seen_before = query_db('''SELECT `song_id`
-                                    FROM `daily_songs`
-                                    WHERE `album_uri` = ?''', (song_details['album_uri'], ))
+    album_seen_before = DailySong.filter_by(album_uri=song_details['album_uri']).first()
+
     if not album_seen_before:
         retrieve_album_art(song_details['album_uri'])
 

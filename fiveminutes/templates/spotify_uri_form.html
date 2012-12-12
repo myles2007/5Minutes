@@ -1,0 +1,23 @@
+<form class='form-horizontal' action="{{ url_for('set_song') }}" method=post>
+    <div class='control-group'>
+        <div class='controls'>
+            <label for="spotify_uri">Spotify URI</label>
+            <input type="text" name="spotify_uri" required placeholder="URI">
+        </div>
+    </div>
+    <div class='control-group'>
+        <div class='controls'>
+            <label for="song_date">Song Date</label>
+            <input type='hidden' id='song_date' name='song_date' />
+                <button type='button' id='date_selection' class="btn btn-primary">Select a Date</button>
+                <button type='button' class="btn" id='calendar_toggle'>
+                    <span class='caret'></span>
+                </button>
+        </div>
+    </div>
+    <div class='control-group'>
+        <div class='controls'>
+            <input id='add_song_submit' type=submit value="Submit Song" class="btn-large btn btn-success">
+        </div>
+    </div>
+</form>
