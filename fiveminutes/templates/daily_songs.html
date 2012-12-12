@@ -28,10 +28,10 @@
                     {% endif %}
                     <div class='song well' id="{{ song.track_uri }}-{{ song.album_uri }}">
                         <div class='row-fluid'>
-                            <img class='row-fluid' src='/img/albumart/{{ song.album_uri|extract_id_from_uri }}' />
+                            <img class='row-fluid' src='{{ url_for('static', filename='img/albumart') }}/{{ song.album_uri|extract_id_from_uri }}' />
                             <div class='song_details row-fluid '>
                                 <div class='row-fluid'>
-                                    <div class='song_detail'><p id="songDate" class='inline tinyfont'> Date: {{ song.song_date }} </p></div>
+                                    <div class='song_detail'><p id="songDate" class='inline tinyfont'> Date: {{ song.created_on|datetimeformat(format="%m/%d/%Y") }} </p></div>
                                 </div>
                                 <div class='divider'></div>
                                 <div class='row-fluid'>
