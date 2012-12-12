@@ -62,6 +62,7 @@ def login():
         flash(err, 'error')
 
     return render_template('login.html', next=oid.get_next_url(),
+                           openid_domain=app.config['OPENID_DOMAIN'],
                            id_url='https://www.google.com/accounts/o8/id')
 
 @oid.after_login
@@ -73,8 +74,8 @@ def create_or_login(resp):
     """
     session['openid'] = resp.identity_url
     user = User.query.filter_by(openid=resp.identity_url).first()
-    if not resp.email.endswith('@britecore.com'):
-        flash('You must be logged in to your britecore.com email to continue.', 'error')
+    if not resp.email.endswith('@{}'.format(app.config['OPENID_DOMAIN'])):
+        flash('You must be logged in to your {} Google account to continue.'.format(app.config['OPENID_DOMAIN']), 'error')
         return redirect(url_for('index'))
     if user is not None:
         flash(u'Successfully signed in', 'success')
@@ -105,7 +106,7 @@ def create_profile():
             user.insert()
             safe_commit()
             return redirect(oid.get_next_url())
-    return render_template('create_profile.html', next_url=oid.get_next_url())
+    return render_template('create_profile.html', next_url=oid.get_next_url(), work_groups=app.config['WORK_GROUPS'])
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -133,7 +134,7 @@ def edit_profile():
             g.user.group = form['group']
             safe_commit()
             return redirect(url_for('edit_profile'))
-    return render_template('edit_profile.html', form=form)
+    return render_template('edit_profile.html', form=form, work_groups=app.config['WORK_GROUPS'])
 
 @app.route('/logout')
 @login_required
@@ -167,13 +168,12 @@ def add_announcement():
     return redirect(url_for('announcements'))
 
 @app.route('/daily-songs', methods=['GET'])
-@app.route('/daily-songs/<message>', methods=['GET'])
 @login_required
-def get_daily_songs(**kwargs):
+def get_daily_songs():
     songs = DailySong.order_by(DailySong.created_on.desc()).all()
     song_of_the_day = get_song_of_the_day()
     return render_template('daily_songs.html', songs=songs,
-                           song_of_the_day=song_of_the_day, **kwargs)
+                           song_of_the_day=song_of_the_day)
 
 def extract_id_from_uri(uri):
     '''
@@ -190,7 +190,8 @@ def set_song():
         new_song.insert()
         safe_commit()
 
-    return redirect(url_for('get_daily_songs', message='Song set successfully!'))
+    flash('Song set successfully!', 'success')
+    return redirect(url_for('get_daily_songs'))
 
 def get_song_details(track_uri):
     '''
@@ -211,9 +212,8 @@ def get_song_details(track_uri):
     song_details['album_uri'] = album.get('href')
     song_details['album_name'] = album.find('name').get_text()
 
-    album_seen_before = query_db('''SELECT `song_id`
-                                    FROM `daily_songs`
-                                    WHERE `album_uri` = ?''', (song_details['album_uri'], ))
+    album_seen_before = DailySong.filter_by(album_uri=song_details['album_uri']).first()
+
     if not album_seen_before:
         retrieve_album_art(song_details['album_uri'])
 
