@@ -152,7 +152,7 @@ def get_song_of_the_day(today=None):
     if not today:
         today = datetime.now().date()
 
-    song_of_the_day = DailySong.filter(func.date(DailySong.created_on) == today).all()
+    song_of_the_day = DailySong.filter(func.date(DailySong.created_on) == today).first()
     return song_of_the_day
 
 @app.route('/announcements/add', methods=['POST'])
