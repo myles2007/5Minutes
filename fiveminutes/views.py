@@ -252,9 +252,22 @@ def announcements():
                            song_of_the_day=song_of_the_day)
 
 @app.route('/queues', methods=['GET'])
-@app.route('/queues/<string:user_id>', methods=['GET'])
-def get_queues(user_id=None):
+def get_all_queues():
     pass
+
+@app.route('/queues/<string:user_id>', methods=['GET'])
+def get_user_queue(user_id):
+    quser = User.get(user_id)
+    return render_template('queue.html', quser=quser)
+
+@app.route('/iterations', methods=['GET'])
+def get_all_iterations():
+    pass
+
+@app.route('/iterations/<string:iteration_id>', methods=['GET'])
+def get_iteration(iteration_id):
+    iteration = Iteration.get(iteration_id)
+    return render_template('iteration.html', iteration=iteration)
 
 def datetimeformat(value, format='%m/%d/%Y %I:%M %p'):
     return value.strftime(format)

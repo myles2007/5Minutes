@@ -19,4 +19,6 @@ db = SQLAlchemy(app)
 mail = Mail(app)
 oid = OpenID(app, '/tmp')
 
+TASK_TYPES = ('Funded', 'Community', 'Interrupt', 'Support', 'DevOps')
+
 import views
