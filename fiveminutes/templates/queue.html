@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block title %}{{ quser.name }}'s Queue{% endblock %}
+{% block content %}
+    <div class="hero-unit" style="padding: 26px;">
+        {% for task in quser.tasks %}
+            <div class="hero-unit" style="padding: 12px; background-color: #f3f3f3;">
+                <p><strong>{{ task.title }}</strong>: {{ task.created_on|datetimeformat }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

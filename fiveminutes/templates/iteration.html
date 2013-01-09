@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block title %}Iteration - {{ iteration.title }}{% endblock %}
+{% block content %}
+    <div class="hero-unit" style="padding: 26px;">
+        <h3>{{ iteration.title }}</h3>
+        {% for task in iteration.tasks %}
+            <div class="hero-unit" style="padding: 12px; background-color: #f3f3f3;">
+                <p><strong>{{ task.title }}</strong>: {{ task.created_on|datetimeformat }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
