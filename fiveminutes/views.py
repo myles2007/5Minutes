@@ -253,7 +253,13 @@ def announcements():
 
 @app.route('/queues', methods=['GET'])
 @app.route('/queues/<string:user_id>', methods=['GET'])
-def get_queues(user_id=None):
+@app.route('/queues/<string:queue_id>', methods=['GET'])
+def get_queues(user_id=None, queue_id=None):
+    pass
+
+@app.route('/iterations', methods=['GET'])
+@app.route('/iterations/<string:iteration_id>', methods=['GET'])
+def get_iterations(iteration_id=None):
     pass
 
 def datetimeformat(value, format='%m/%d/%Y %I:%M %p'):

@@ -47,6 +47,7 @@
                     {% if g.user %}
                     <li><a href="{{ url_for('index') }}">Announcements</a>
                     <li><a href="{{ url_for('get_daily_songs') }}">Daily Songs</a>
+                    <li><a href="{{ url_for('get_iterations') }}">Iterations</a>
                     <li><a href="{{ url_for('get_queues') }}">All Queues</a>
                     <li><a href="{{ url_for('get_queues') }}/{{ g.user.id }}">My Queue</a>
                     <li><a href="{{ url_for('edit_profile') }}">Profile</a>
