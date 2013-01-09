@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 from datetime import datetime
-from fiveminutes import db
+from fiveminutes import db, WORK_ITEM_TYPES
 from mixin import OurMixin, uuid
 
 class User(OurMixin, db.Model):
@@ -32,15 +32,33 @@ class Announcement(OurMixin, db.Model):
         return "Announcement: {}".format(self.id)
 
 
+class Iteration(OurMixin, db.Model):
+    __tablename__ = 'iterations'
+
+    id = db.Column(db.CHAR(length=36), default=uuid, primary_key=True)
+    work_items = db.relationship("WorkItem", backref="iteration")
+    title = db.Column(db.String())
+    completed = db.Column(db.Boolean(), default=False, server_default='0')
+    created_on = db.Column(db.DATETIME(), nullable=False, default=datetime.now)
+    completed_on = db.Column(db.DATETIME())
+
+    def __repr__(self):
+        return "Iteration: {0} - {1}".format(self.id, self.title)
+
+
 class WorkItem(OurMixin, db.Model):
     __tablename__ = 'work_items'
 
     id = db.Column(db.CHAR(length=36), default=uuid, primary_key=True)
     comments = db.relationship("WorkItemComment", backref="work_item")
     user_id = db.Column(db.CHAR(length=36), db.ForeignKey('users.id' ), nullable=False)
+    iteration_id = db.Column(db.CHAR(length=36), db.ForeignKey('iterations.id' ), nullable=False)
     title = db.Column(db.String())
     # Summary is stored markdown text that is rendered before being displayed on the screen.
     summary = db.Column(db.String())
+    type = db.Column(db.Enum(*WORK_ITEM_TYPES), nullable=False)
+    iteration_sort_order = db.Column(db.Integer(), server_default='0', default=0)
+    queue_sort_order = db.Column(db.Integer(), server_default='0', default=0)
     completed = db.Column(db.Boolean(), default=False, server_default='0')
     created_on = db.Column(db.DATETIME(), nullable=False, default=datetime.now)
     completed_on = db.Column(db.DATETIME())
